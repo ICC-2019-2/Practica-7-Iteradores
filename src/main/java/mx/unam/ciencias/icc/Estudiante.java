@@ -35,6 +35,10 @@ public class Estudiante implements Registro<CampoEstudiante> {
                       double promedio,
                       int    edad) {
         // Aquí va su código.
+        this.nombre = nombre;
+        this.cuenta = cuenta;
+        this.promedio = promedio;
+        this.edad = edad;
     }
 
     /**
@@ -43,6 +47,7 @@ public class Estudiante implements Registro<CampoEstudiante> {
      */
     public String getNombre() {
         // Aquí va su código.
+        return nombre;
     }
 
     /**
@@ -51,6 +56,7 @@ public class Estudiante implements Registro<CampoEstudiante> {
      */
     public void setNombre(String nombre) {
         // Aquí va su código.
+        this.nombre = nombre;
     }
 
     /**
@@ -59,6 +65,7 @@ public class Estudiante implements Registro<CampoEstudiante> {
      */
     public int getCuenta() {
         // Aquí va su código.
+        return cuenta;
     }
 
     /**
@@ -67,6 +74,7 @@ public class Estudiante implements Registro<CampoEstudiante> {
      */
     public void setCuenta(int cuenta) {
         // Aquí va su código.
+        this.cuenta = cuenta;
     }
 
     /**
@@ -75,6 +83,7 @@ public class Estudiante implements Registro<CampoEstudiante> {
      */
     public double getPromedio() {
         // Aquí va su código.
+        return promedio;
     }
 
     /**
@@ -83,6 +92,7 @@ public class Estudiante implements Registro<CampoEstudiante> {
      */
     public void setPromedio(double promedio) {
         // Aquí va su código.
+        this.promedio = promedio;
     }
 
     /**
@@ -91,6 +101,7 @@ public class Estudiante implements Registro<CampoEstudiante> {
      */
     public int getEdad() {
         // Aquí va su código.
+        return edad;
     }
 
     /**
@@ -99,6 +110,7 @@ public class Estudiante implements Registro<CampoEstudiante> {
      */
     public void setEdad(int edad) {
         // Aquí va su código.
+        this.edad = edad;
     }
 
     /**
@@ -106,7 +118,12 @@ public class Estudiante implements Registro<CampoEstudiante> {
      * @return una representación en cadena del estudiante.
      */
     @Override public String toString() {
-        // Aquí va su código.
+        String cadena = String.format("Nombre   : %s\n" +
+                                      "Cuenta   : %09d\n" +
+                                      "Promedio : %2.2f\n" +
+                                      "Edad     : %d",
+                                      nombre, cuenta, promedio, edad);
+        return cadena;
     }
 
     /**
@@ -121,7 +138,17 @@ public class Estudiante implements Registro<CampoEstudiante> {
         if (!(objeto instanceof Estudiante))
             return false;
         Estudiante estudiante = (Estudiante)objeto;
-        // Aquí va su código.
+        if (estudiante == null)
+                return false;
+        if (!this.nombre.equals(estudiante.nombre))
+                return false;
+        if (this.cuenta != (estudiante.cuenta))
+                return false;
+        if (this.promedio != (estudiante.promedio))
+                return false;
+        if (this.edad != (estudiante.edad))
+                return false;
+        return true;
     }
 
     /**
@@ -130,7 +157,11 @@ public class Estudiante implements Registro<CampoEstudiante> {
      * @throws IOException si un error de entrada/salida ocurre.
      */
     @Override public void guarda(BufferedWriter out) throws IOException {
-        // Aquí va su código.
+        out.write(String.format("%s\t%d\t%2.2f\t%d\n",
+                              nombre,
+                              cuenta,
+                              promedio,
+                              edad));
     }
 
     /**
@@ -142,7 +173,24 @@ public class Estudiante implements Registro<CampoEstudiante> {
      *         recibida no contiene a un estudiante.
      */
     @Override public boolean carga(BufferedReader in) throws IOException {
-        // Aquí va su código.
+        String l=in.readLine();
+      if (l == null)
+              return false;
+      l=l.trim();
+      if (l.isEmpty())
+              return false;
+      String[] t=l.split("\t");
+      if(t.length != 4)
+              throw new IOException();
+      nombre=t[0];
+      try{
+              cuenta=Integer.parseInt(t[1]);
+              promedio=Double.parseDouble(t[2]);
+              edad=Integer.parseInt(t[3]);
+      } catch(NumberFormatException nfe) {
+              throw new IOException("error entrada salida");
+      }
+      return true;
     }
 
     /**
@@ -172,6 +220,48 @@ public class Estudiante implements Registro<CampoEstudiante> {
      *         {@link CampoEstudiante}.
      */
     @Override public boolean caza(CampoEstudiante campo, Object valor) {
-        // Aquí va su código.
+        if(!(campo instanceof CampoEstudiante))
+              throw new IllegalArgumentException();
+      CampoEstudiante ce =(CampoEstudiante)campo;
+      switch(ce) {
+      case NOMBRE:
+              return cazaNombre(valor);
+      case CUENTA:
+              return cazaCuenta(valor);
+      case PROMEDIO:
+              return cazaPromedio(valor);
+      case EDAD:
+              return cazaEdad(valor);
+      default: return false;
+      }
+    }
+    private boolean cazaNombre(Object o){
+            if(!(o instanceof String))
+                    return false;
+            String v=(String)o;
+            if(v.isEmpty())
+                    return false;
+            return nombre.indexOf(v)!=-1;
+    }
+
+    private boolean cazaCuenta(Object o){
+            if(!(o instanceof Integer))
+                    return false;
+            Integer v=(Integer)o;
+            return cuenta>=v.intValue();
+    }
+
+    private boolean cazaPromedio(Object o){
+            if(!(o instanceof Double))
+                    return false;
+            Double v=(Double)o;
+            return promedio>=v.doubleValue();
+    }
+
+    private boolean cazaEdad(Object o){
+            if(!(o instanceof Integer))
+                    return false;
+            Integer v=(Integer)o;
+            return edad>=v.intValue();
     }
 }
